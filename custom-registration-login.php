@@ -64,7 +64,7 @@ function custom_user_registration_form() {
             if ($user_type === 'self_publisher') {
                 $default_role = 'self_publisher';
             } elseif ($user_type === 'paid_subscriber') {
-                echo 'You cannot register as Paid Subscriber. Contact the administrator.';
+                echo 'You cannot register as a Paid Subscriber. Contact the administrator.';
                 return;
             }
 
@@ -80,3 +80,16 @@ function custom_user_registration_form() {
                     update_user_meta($user_id, 'profile_photo', $upload_info['url']);
                 }
             }
+
+            $email_subject = 'Welcome to our site';
+            $email_message = 'Thank you for registering as a subscriber.';
+            wp_mail($email, $email_subject, $email_message);
+
+            $redirect_url = wp_login_url();
+            wp_redirect($redirect_url);
+            exit;
+        }
+    }
+
+    ob_start();
+    ?>
