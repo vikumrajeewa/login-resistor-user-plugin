@@ -93,3 +93,52 @@ function custom_user_registration_form() {
 
     ob_start();
     ?>
+
+<div class="wrap">
+        <h2>Custom Registration</h2>
+        <form method="post" action="" enctype="multipart/form-data" onsubmit="return validateForm();">
+
+            <label for="profile_photo">Profile Photo:</label>
+            <input type="file" id="profile_photo" name="profile_photo">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required><br>
+            <label for="first_name">First Name:</label>
+            <input type="text" id="first_name" name="first_name" required><br>
+            <label for="last_name">Last Name:</label>
+            <input type="text" id="last_name" name="last_name" required><br>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required><br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required><br>
+            <label for="user_type">Select User Type:</label>
+            <select name="user_type" id="user_type">
+                <option value="subscriber">Subscriber</option
+
+>
+                <option value="self_publisher">Self-Publisher</option>
+            </select><br><br>
+
+            <!-- Additional fields for Self-Publishers -->
+            <div id="self_publisher_fields" style="display: none;">
+                <label for="bio">Author's Biography:</label>
+                <textarea id="bio1" name="bio" rows="4" cols="46" style="max-width: 100%;"></textarea><br>
+
+                <label for="interest">Interest as a Self-Publisher:</label>
+                <textarea id="interest1" name="interest" rows="4" cols="46" style="max-width: 100%;"></textarea><br>
+
+                <label for="language">Language:</label>
+                <select name="self_publisher_language" id="language1">
+                    <option value="english">English</option>
+                    <option value="sinhala">Sinhala</option>
+                    <option value="tamil">Tamil</option>
+                    <option value="other">Other</option>
+                </select><br><br>
+
+                <input type="checkbox" id="agree_terms" name="agree_terms">
+                <label for="agree_terms">I agree with the Rights of the Self-Publisher and the Terms and Conditions. Refer to the following link for more details.</label>
+                <br>
+                <a href="https://nonimi.ink/self-publisher-terms-and-conditions/">Terms and Condition</a><br><br>
+            </div>
+
+            <input type="submit" name="custom_register" value="Register">
+        </form>
