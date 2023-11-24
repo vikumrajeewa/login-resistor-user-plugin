@@ -142,3 +142,182 @@ function custom_user_registration_form() {
 
             <input type="submit" name="custom_register" value="Register">
         </form>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var userTypeSelect = document.getElementById('user_type');
+                var selfPublisherFields = document.getElementById('self_publisher_fields');
+
+                // Initial check on page load
+                toggleFieldsVisibility();
+
+                // Add an event listener to the user type select
+                userTypeSelect.addEventListener('change', function () {
+                    toggleFieldsVisibility();
+                });
+
+                function toggleFieldsVisibility() {
+                    console.log('Toggling fields visibility');
+                    selfPublisherFields.style.display = (userTypeSelect.value === 'self_publisher') ? 'block' : 'none';
+                }
+            });
+
+            // Function to validate the form before submission
+            function validateForm() {
+                var userType = document.getElementById('user_type').value;
+                var agreeTermsCheckbox = document.getElementById('agree_terms');
+
+                // Validate additional fields for self-publishers
+                if (userType === 'self_publisher') {
+                    var bio = document.getElementById('bio1').value;
+                    var interest = document.getElementById('interest1').value;
+                    var language = document.getElementById('language1').value;
+
+                    if (!bio.trim() || !interest.trim() || language === 'default') {
+                        alert('Please fill in all the required fields for Self-Publishers.');
+                        return false;
+                    }
+                }
+
+                 // Validate the agreement checkbox
+                // if (!agreeTermsCheckbox.checked) {
+                //     alert('Please agree to the terms and conditions.');
+                //     return false;
+                // }
+
+                // Additional validation for other fields if needed
+
+                // If all validations pass, allow form submission
+                return true;
+            }
+        </script>
+
+    </div>
+    <?php
+    return ob_get_clean();
+}
+
+
+// Handle role switching and profile updates
+function custom_role_switching_form() {
+    if (isset($_POST['switch_role'])) {
+        $new_role = sanitize_text_field($_POST['new_role']);
+        $current_user = wp_get_current_user();
+        $current_role = $current_user->roles[0];
+
+        if (in_array($new_role, ['subscriber', 'self_publisher'])) {
+            if ($new_role === 'paid_subscriber') {
+                echo 'You cannot switch to Paid Subscriber. Contact the administrator.';
+            } else {
+                $current_user->set_role($new_role);
+                echo 'Your role has been switched to ' . $new_role;
+            }
+        } else {
+            echo 'Invalid role selection.';
+        }
+    }
+
+    if (isset($_POST['update_profile'])) {
+        $new_first_name = sanitize_text_field($_POST['new_first_name']);
+        $new_last_name = sanitize_text_field($_POST['new_last_name']);
+
+        // Update first name and last name
+        update_user_meta(get_current_user_id(), 'first_name', $new_first_name);
+        update_user_meta(get_current_user_id(), 'last_name', $new_last_name);
+
+        // Handle profile photo update
+        if (isset($_FILES['new_profile_photo'])) {
+            $file = $_FILES['new_profile_photo'];
+            $upload_overrides = array('test_form' => false);
+            $upload_info = wp_handle_upload($file, $upload_overrides);
+
+            if (!empty($upload_info['file'])) {
+                update_user_meta(get_current_user_id(), 'profile_photo', $upload_info['url']);
+            }
+        }
+
+        echo 'Profile information updated successfully.';
+    }
+
+    ob_start();
+    ?>
+    <div class="wrap">
+        <h2>Role Switching and Profile Update</h2>
+        <form method="post" action="" enctype="multipart/form-data">
+            <!-- Add a dropdown to select the new role -->
+            <label for="new_role">Select your new role:</label>
+            <select name="new_role" id="new_role">
+                <option value="subscriber">Subscriber</option>
+                <option value="self_publisher">Self-Publisher</option>
+                <!-- You can add more role options here -->
+            </select>
+            <label for="new_first_name">New First Name:</label>
+            <input type="text" id="new_first_name" name="new_first_name" required><br>
+            <label for="new_last_name">New Last Name:</label>
+            <input type="text" id="new_last_name" name="new_last_name" required><br>
+            <label for="new_profile_photo">New Profile Photo:</label>
+            <input type="file" id="new_profile_photo" name="new_profile_photo"><br><br><br>
+            <input type="submit" name="update_profile" value="Update Profile">&nbsp;&nbsp;
+            <input type="submit" name="switch_role" value="Switch Role">
+        </form>
+    </div>
+    <?php
+    return ob_get_clean();
+}
+
+// Define a function for the login form
+function custom_user_login_form() {
+    ob_start();
+    ?>
+    <div class="wrap">
+        <h2>Login</h2>
+        <form method="post" action="<?php echo wp_login_url(); ?>">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="log" required><br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="pwd" required><br><br>
+            <input type="submit" name="custom_login" value="Log In">
+        </form>
+    </div>
+    <?php
+    return ob_get_clean();
+}
+
+// Add WordPress hooks to display registration, role-switching, and login forms using shortcodes
+add_shortcode('custom_user_registration_form', 'custom_user_registration_form');
+add_shortcode('custom_role_switching_form', 'custom_role_switching_form');
+add_shortcode('custom_user_login_form', 'custom_user_login_form');
+
+// Create a settings page for your plugin
+function custom_registration_role_settings_menu() {
+    add_menu_page('Custom Registration & Role Settings', 'Plugin Settings', 'manage_options', 'custom-reg-role-settings', 'custom_registration_role_settings_page');
+}
+add_action('admin_menu', 'custom_registration_role_settings_menu');
+
+// Create the settings page content
+function custom_registration_role_settings_page() {
+    if (!current_user_can('manage_options')) {
+        wp_die(__('You do not have sufficient permissions to access this page.'));
+    }
+
+    if (isset($_POST['save_settings'])) {
+        // Handle and save settings here
+        echo 'Settings saved!';
+    }
+
+    ob_start();
+    ?>
+    <div class="wrap">
+        <h2>Custom Registration & Role Settings</h2>
+        <form method="post" action="">
+            <!-- Example setting field -->
+            <label for="custom_option">Custom Option:</label>
+            <input type="text" id="custom_option" name="custom_option" value="<?php echo esc_attr(get_option('custom_option')); ?>"><br><br>
+
+            <!-- Add more setting fields as needed -->
+
+            <input type="submit" name="save_settings" value="Save Settings">
+        </form>
+    </div>
+    <?php
+    return ob_get_clean();
+}
