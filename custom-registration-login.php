@@ -34,10 +34,9 @@ register_activation_hook(__FILE__, 'custom_registration_create_table');
 
 // Enqueue the CSS for role distinctions
 function custom_user_management_enqueue_styles() {
-   wp_enqueue_style('custom-user-management', plugin_dir_url(__FILE__) . 'style.css');
+    wp_enqueue_style('custom-user-management', plugin_dir_url(__FILE__) . 'style.css');
 }
 add_action('wp_enqueue_scripts', 'custom_user_management_enqueue_styles');
-
 
 // Handle user registration
 function custom_user_registration_form() {
@@ -93,8 +92,7 @@ function custom_user_registration_form() {
 
     ob_start();
     ?>
-
-<div class="wrap">
+    <div class="wrap">
         <h2>Custom Registration</h2>
         <form method="post" action="" enctype="multipart/form-data" onsubmit="return validateForm();">
 
@@ -142,6 +140,7 @@ function custom_user_registration_form() {
 
             <input type="submit" name="custom_register" value="Register">
         </form>
+
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 var userTypeSelect = document.getElementById('user_type');
